@@ -402,7 +402,7 @@ module.exports = function (NAME, exec) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // to indexed object, toObject with fallback for non-array-like ES3 strings
-var IObject = __webpack_require__(48);
+var IObject = __webpack_require__(49);
 var defined = __webpack_require__(25);
 module.exports = function (it) {
   return IObject(defined(it));
@@ -413,7 +413,7 @@ module.exports = function (it) {
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var pIE = __webpack_require__(49);
+var pIE = __webpack_require__(50);
 var createDesc = __webpack_require__(33);
 var toIObject = __webpack_require__(17);
 var toPrimitive = __webpack_require__(24);
@@ -580,7 +580,7 @@ module.exports = function (KEY, exec) {
 // 5 -> Array#find
 // 6 -> Array#findIndex
 var ctx = __webpack_require__(20);
-var IObject = __webpack_require__(48);
+var IObject = __webpack_require__(49);
 var toObject = __webpack_require__(10);
 var toLength = __webpack_require__(9);
 var asc = __webpack_require__(88);
@@ -642,7 +642,7 @@ if (__webpack_require__(7)) {
   var toAbsoluteIndex = __webpack_require__(37);
   var toPrimitive = __webpack_require__(24);
   var has = __webpack_require__(13);
-  var classof = __webpack_require__(50);
+  var classof = __webpack_require__(51);
   var isObject = __webpack_require__(5);
   var toObject = __webpack_require__(10);
   var isArrayIter = __webpack_require__(85);
@@ -1494,155 +1494,12 @@ module.exports = function (it, TYPE) {
 
 /***/ }),
 /* 48 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// fallback for non-array-like ES3 and non-enumerable old V8 strings
-var cof = __webpack_require__(21);
-// eslint-disable-next-line no-prototype-builtins
-module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
-  return cof(it) == 'String' ? it.split('') : Object(it);
-};
-
-
-/***/ }),
-/* 49 */
-/***/ (function(module, exports) {
-
-exports.f = {}.propertyIsEnumerable;
-
-
-/***/ }),
-/* 50 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// getting tag from 19.1.3.6 Object.prototype.toString()
-var cof = __webpack_require__(21);
-var TAG = __webpack_require__(6)('toStringTag');
-// ES3 wrong here
-var ARG = cof(function () { return arguments; }()) == 'Arguments';
-
-// fallback for IE11 Script Access Denied error
-var tryGet = function (it, key) {
-  try {
-    return it[key];
-  } catch (e) { /* empty */ }
-};
-
-module.exports = function (it) {
-  var O, T, B;
-  return it === undefined ? 'Undefined' : it === null ? 'Null'
-    // @@toStringTag case
-    : typeof (T = tryGet(O = Object(it), TAG)) == 'string' ? T
-    // builtinTag case
-    : ARG ? cof(O)
-    // ES3 arguments fallback
-    : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
-};
-
-
-/***/ }),
-/* 51 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_Component__ = __webpack_require__(3);
-
-
-
-
-class Button extends __WEBPACK_IMPORTED_MODULE_0__lib_Component__["a" /* default */] {
-    constructor({ title, style }) {
-        super();
-        this.title = title;
-        this.style = style;
-    }
-
-    render() {
-        return `
-            <button class="${ this.style } common__button">${ this.title }</button>
-        `;
-    }
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (Button);
-
-
-/***/ }),
-/* 52 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-
-
-// 라우터 정보들이 담길 라우터 오브젝트 입니다.
-const routeList = {};
-const state = {};
-
-/* 라우터
- * 라우터 관련된 모든 정보를 저장.
- * moveToLocation(pageName) : pageName으로 이동하면서 해당 로케이션이 없는지 있는지 유효성 검사도 함.
- * router(path, locationId) : 로케이션을 지정함. 지정할 때 아이디가 맞는 page 데이터도 같이 넣어줌.
- * router(manager) : page 데이터의 mount를 해주며, 렌더를 실행함. 해당 렌더는 constructor에서 EventListener를 통해 해쉬값 변경, document 값이 바뀌었는지에 따라 호출함. */
-class Router {
-    constructor(manager) {
-        this.manager = manager;
-        state.location = '/';
-
-        // hash change 하는 리스너를 만듭니다.
-        window.addEventListener('hashchange', () => this.router(this.manager));
-        // load 하는 리스너를 만듭니다.
-        window.addEventListener('load', () => this.router(this.manager));
-    }
-
-    route(path, locationId) {
-        routeList[path] = { locationId: locationId, controller: `${this.manager.render(locationId)}` };
-    }
-
-    router(manager) {
-        // 기존에 el에 데이터가 있는지 없는지 체크합니다.
-        // 있으면 기존의 것을 사용하고, 없으면 getElement로 view를 불러옵니다.
-        this.el = this.el || document.getElementById('view');
-        // url hash location을 불러옵니다.
-        // 처음 상태에 아무것도 없을 예정이니 '/' 를 넣어줍니다.
-        const url = location.hash.slice(1) || '/';
-        // 현재 상태가 해쉬 상태가 틀리다면 상태 주  소로 넘깁니다.
-        const urlChk = url === state.location ? url : state.location;
-        // 다른 페이지로 로케이션을 통해 넘어가지 못하도록 강제로 변경합니다.
-        location.hash = urlChk;
-        // 라우터로 담겨져있는 router url들을 가져옵니다.
-        const route = routeList[urlChk];
-        // 두개다 변경사항이 있다면, 로드합니다.
-        if (this.el && route.controller) {
-            // 랜더합니다.
-            this.el.innerHTML = route.controller;
-            manager.mount(route.locationId);
-        }
-    }
-
-    static moveToLocation(pageName) {
-        const page = Object.keys(routeList).find(key => routeList[key].locationId === pageName);
-
-        if (page === undefined || page === null) {
-            console.log('없는 주소 입니다.');
-            return;
-        }
-
-        state.location = page;
-        location.href = ((location.href.split('/')[3] === '#') ? location.href : location.href) + page;
-        //
-    }
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (Router);
-
-
-/***/ }),
-/* 53 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return manGroup; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return womanGroup; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return manGroup; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return womanGroup; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return etc; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vs_png__ = __webpack_require__(357);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vs_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__vs_png__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__home_png__ = __webpack_require__(358);
@@ -1715,10 +1572,6 @@ class Router {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_34__woman_15_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_34__woman_15_png__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_35__woman_16_png__ = __webpack_require__(392);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_35__woman_16_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_35__woman_16_png__);
-/* harmony reexport (default from non-hamory) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_3__dog_jpg___default.a; });
-/* harmony reexport (default from non-hamory) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_2__back_png___default.a; });
-/* harmony reexport (default from non-hamory) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__home_png___default.a; });
-/* harmony reexport (default from non-hamory) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_0__vs_png___default.a; });
 
 
 
@@ -1797,7 +1650,158 @@ const womanGroup = [
     { name: '은가람', group: '히어로 왈츠', src: __WEBPACK_IMPORTED_MODULE_35__woman_16_png___default.a },
 ];
 
+const etc = [
+    { src: __WEBPACK_IMPORTED_MODULE_3__dog_jpg___default.a },
+    { src: __WEBPACK_IMPORTED_MODULE_2__back_png___default.a },
+    { src: __WEBPACK_IMPORTED_MODULE_1__home_png___default.a },
+    { src: __WEBPACK_IMPORTED_MODULE_0__vs_png___default.a },
+];
 
+
+
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// fallback for non-array-like ES3 and non-enumerable old V8 strings
+var cof = __webpack_require__(21);
+// eslint-disable-next-line no-prototype-builtins
+module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
+  return cof(it) == 'String' ? it.split('') : Object(it);
+};
+
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports) {
+
+exports.f = {}.propertyIsEnumerable;
+
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// getting tag from 19.1.3.6 Object.prototype.toString()
+var cof = __webpack_require__(21);
+var TAG = __webpack_require__(6)('toStringTag');
+// ES3 wrong here
+var ARG = cof(function () { return arguments; }()) == 'Arguments';
+
+// fallback for IE11 Script Access Denied error
+var tryGet = function (it, key) {
+  try {
+    return it[key];
+  } catch (e) { /* empty */ }
+};
+
+module.exports = function (it) {
+  var O, T, B;
+  return it === undefined ? 'Undefined' : it === null ? 'Null'
+    // @@toStringTag case
+    : typeof (T = tryGet(O = Object(it), TAG)) == 'string' ? T
+    // builtinTag case
+    : ARG ? cof(O)
+    // ES3 arguments fallback
+    : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
+};
+
+
+/***/ }),
+/* 52 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_Component__ = __webpack_require__(3);
+
+
+
+
+class Button extends __WEBPACK_IMPORTED_MODULE_0__lib_Component__["a" /* default */] {
+    constructor({ title, style }) {
+        super();
+        this.title = title;
+        this.style = style;
+    }
+
+    render() {
+        return `
+            <button class="${ this.style } common__button">${ this.title }</button>
+        `;
+    }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Button);
+
+
+/***/ }),
+/* 53 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+
+
+// 라우터 정보들이 담길 라우터 오브젝트 입니다.
+const routeList = {};
+const state = {};
+
+/* 라우터
+ * 라우터 관련된 모든 정보를 저장.
+ * moveToLocation(pageName) : pageName으로 이동하면서 해당 로케이션이 없는지 있는지 유효성 검사도 함.
+ * router(path, locationId) : 로케이션을 지정함. 지정할 때 아이디가 맞는 page 데이터도 같이 넣어줌.
+ * router(manager) : page 데이터의 mount를 해주며, 렌더를 실행함. 해당 렌더는 constructor에서 EventListener를 통해 해쉬값 변경, document 값이 바뀌었는지에 따라 호출함. */
+class Router {
+    constructor(manager) {
+        this.manager = manager;
+        state.location = '/';
+
+        // hash change 하는 리스너를 만듭니다.
+        window.addEventListener('hashchange', () => this.router(this.manager));
+        // load 하는 리스너를 만듭니다.
+        window.addEventListener('load', () => this.router(this.manager));
+    }
+
+    route(path, locationId) {
+        routeList[path] = { locationId: locationId, controller: `${this.manager.render(locationId)}` };
+    }
+
+    router(manager) {
+        // 기존에 el에 데이터가 있는지 없는지 체크합니다.
+        // 있으면 기존의 것을 사용하고, 없으면 getElement로 view를 불러옵니다.
+        this.el = this.el || document.getElementById('view');
+        // url hash location을 불러옵니다.
+        // 처음 상태에 아무것도 없을 예정이니 '/' 를 넣어줍니다.
+        const url = location.hash.slice(1) || '/';
+        // 현재 상태가 해쉬 상태가 틀리다면 상태 주  소로 넘깁니다.
+        const urlChk = url === state.location ? url : state.location;
+        // 다른 페이지로 로케이션을 통해 넘어가지 못하도록 강제로 변경합니다.
+        location.hash = urlChk;
+        // 라우터로 담겨져있는 router url들을 가져옵니다.
+        const route = routeList[urlChk];
+        // 두개다 변경사항이 있다면, 로드합니다.
+        if (this.el && route.controller) {
+            // 랜더합니다.
+            this.el.innerHTML = route.controller;
+            manager.mount(route.locationId);
+        }
+    }
+
+    static moveToLocation(pageName) {
+        const page = Object.keys(routeList).find(key => routeList[key].locationId === pageName);
+
+        if (page === undefined || page === null) {
+            console.log('없는 주소 입니다.');
+            return;
+        }
+
+        state.location = page;
+        location.href = ((location.href.split('/')[3] === '#') ? location.href : location.href) + page;
+        //
+    }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Router);
 
 
 /***/ }),
@@ -2537,7 +2541,7 @@ module.exports = function (object, index, value) {
 /* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var classof = __webpack_require__(50);
+var classof = __webpack_require__(51);
 var ITERATOR = __webpack_require__(6)('iterator');
 var Iterators = __webpack_require__(46);
 module.exports = __webpack_require__(23).getIteratorMethod = function (it) {
@@ -3248,9 +3252,9 @@ module.exports.f = function getOwnPropertyNames(it) {
 // 19.1.2.1 Object.assign(target, source, ...)
 var getKeys = __webpack_require__(36);
 var gOPS = __webpack_require__(56);
-var pIE = __webpack_require__(49);
+var pIE = __webpack_require__(50);
 var toObject = __webpack_require__(10);
-var IObject = __webpack_require__(48);
+var IObject = __webpack_require__(49);
 var $assign = Object.assign;
 
 // should work with symbols and should have deterministic property order (V8 bug)
@@ -3449,7 +3453,7 @@ module.exports = function (iterator, fn, value, entries) {
 
 var aFunction = __webpack_require__(11);
 var toObject = __webpack_require__(10);
-var IObject = __webpack_require__(48);
+var IObject = __webpack_require__(49);
 var toLength = __webpack_require__(9);
 
 module.exports = function (that, callbackfn, aLen, memo, isRight) {
@@ -4023,7 +4027,7 @@ module.exports = function (that, maxLength, fillString, left) {
 
 var getKeys = __webpack_require__(36);
 var toIObject = __webpack_require__(17);
-var isEnum = __webpack_require__(49).f;
+var isEnum = __webpack_require__(50).f;
 module.exports = function (isEntries) {
   return function (it) {
     var O = toIObject(it);
@@ -4044,7 +4048,7 @@ module.exports = function (isEntries) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
-var classof = __webpack_require__(50);
+var classof = __webpack_require__(51);
 var from = __webpack_require__(130);
 module.exports = function (NAME) {
   return function toJSON() {
@@ -4098,10 +4102,10 @@ module.exports = Math.scale || function scale(x, inLow, inHigh, outLow, outHigh)
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_Component__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Storage__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__router_Router__ = __webpack_require__(52);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__assets_Characters__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__router_Router__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__assets_Characters__ = __webpack_require__(48);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__atoms_Img__ = __webpack_require__(68);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__atoms_Button__ = __webpack_require__(51);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__atoms_Button__ = __webpack_require__(52);
 
 
 
@@ -4130,7 +4134,7 @@ class GotoHomeButton extends __WEBPACK_IMPORTED_MODULE_0__lib_Component__["a" /*
         this.button = new __WEBPACK_IMPORTED_MODULE_4__atoms_Img__["a" /* default */]({
             alt: 'home',
             style: 'result-go-to-home__img',
-            src: __WEBPACK_IMPORTED_MODULE_3__assets_Characters__["b" /* home */],
+            src: __WEBPACK_IMPORTED_MODULE_3__assets_Characters__["a" /* etc */][2].src,
         });
     }
 
@@ -4227,7 +4231,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__sass_main_sass__ = __webpack_require__(339);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__sass_main_sass___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__sass_main_sass__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__pages_PageManager__ = __webpack_require__(344);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__router_Router__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__router_Router__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__lib_Preload__ = __webpack_require__(413);
+
 
 
 
@@ -4237,6 +4243,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 const Page = new __WEBPACK_IMPORTED_MODULE_2__pages_PageManager__["a" /* default */]();
 const PageRouter = new __WEBPACK_IMPORTED_MODULE_3__router_Router__["a" /* default */](Page);
+
+Object(__WEBPACK_IMPORTED_MODULE_4__lib_Preload__["a" /* default */])();
 
 // 라우터 지정
 
@@ -4638,7 +4646,7 @@ if (!USE_NATIVE) {
   $GOPD.f = $getOwnPropertyDescriptor;
   $DP.f = $defineProperty;
   __webpack_require__(39).f = gOPNExt.f = $getOwnPropertyNames;
-  __webpack_require__(49).f = $propertyIsEnumerable;
+  __webpack_require__(50).f = $propertyIsEnumerable;
   __webpack_require__(56).f = $getOwnPropertySymbols;
 
   if (DESCRIPTORS && !__webpack_require__(35)) {
@@ -4731,7 +4739,7 @@ setToStringTag(global.JSON, 'JSON', true);
 // all enumerable object keys, includes symbols
 var getKeys = __webpack_require__(36);
 var gOPS = __webpack_require__(56);
-var pIE = __webpack_require__(49);
+var pIE = __webpack_require__(50);
 module.exports = function (it) {
   var result = getKeys(it);
   var getSymbols = gOPS.f;
@@ -4960,7 +4968,7 @@ $export($export.S, 'Object', { setPrototypeOf: __webpack_require__(74).set });
 "use strict";
 
 // 19.1.3.6 Object.prototype.toString()
-var classof = __webpack_require__(50);
+var classof = __webpack_require__(51);
 var test = {};
 test[__webpack_require__(6)('toStringTag')] = 'z';
 if (test + '' != '[object z]') {
@@ -6234,7 +6242,7 @@ var toIObject = __webpack_require__(17);
 var arrayJoin = [].join;
 
 // fallback for not array-like strings
-$export($export.P + $export.F * (__webpack_require__(48) != Object || !__webpack_require__(22)(arrayJoin)), 'Array', {
+$export($export.P + $export.F * (__webpack_require__(49) != Object || !__webpack_require__(22)(arrayJoin)), 'Array', {
   join: function join(separator) {
     return arrayJoin.call(toIObject(this), separator === undefined ? ',' : separator);
   }
@@ -6789,7 +6797,7 @@ __webpack_require__(61)('split', 2, function (defined, SPLIT, $split) {
 var LIBRARY = __webpack_require__(35);
 var global = __webpack_require__(2);
 var ctx = __webpack_require__(20);
-var classof = __webpack_require__(50);
+var classof = __webpack_require__(51);
 var $export = __webpack_require__(0);
 var isObject = __webpack_require__(5);
 var aFunction = __webpack_require__(11);
@@ -10496,7 +10504,7 @@ class SelectGenderBox extends __WEBPACK_IMPORTED_MODULE_0__lib_Component__["a" /
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_Component__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__atoms_Button__ = __webpack_require__(51);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__atoms_Button__ = __webpack_require__(52);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Storage__ = __webpack_require__(12);
 
 
@@ -10561,7 +10569,7 @@ class ManButton extends __WEBPACK_IMPORTED_MODULE_0__lib_Component__["a" /* defa
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_Component__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__atoms_Button__ = __webpack_require__(51);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__atoms_Button__ = __webpack_require__(52);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Storage__ = __webpack_require__(12);
 
 
@@ -10627,8 +10635,8 @@ class WomanButton extends __WEBPACK_IMPORTED_MODULE_0__lib_Component__["a" /* de
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_Component__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__molecules_GameStartButton__ = __webpack_require__(356);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__assets_Characters__ = __webpack_require__(53);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__atoms_Img_js__ = __webpack_require__(68);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__assets_Characters__ = __webpack_require__(48);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__atoms_Img__ = __webpack_require__(68);
 
 
 
@@ -10640,10 +10648,10 @@ class GameStartBox extends __WEBPACK_IMPORTED_MODULE_0__lib_Component__["a" /* d
     constructor() {
         super();
         this.gameStartButton = new __WEBPACK_IMPORTED_MODULE_1__molecules_GameStartButton__["a" /* default */]();
-        this.imageLogo = new __WEBPACK_IMPORTED_MODULE_3__atoms_Img_js__["a" /* default */]({
+        this.imageLogo = new __WEBPACK_IMPORTED_MODULE_3__atoms_Img__["a" /* default */]({
             alt: 'dog',
             style: 'main-game-logo__img',
-            src: __WEBPACK_IMPORTED_MODULE_2__assets_Characters__["c" /* logo */],
+            src: __WEBPACK_IMPORTED_MODULE_2__assets_Characters__["a" /* etc */][0].src,
         });
     }
 
@@ -10670,8 +10678,8 @@ class GameStartBox extends __WEBPACK_IMPORTED_MODULE_0__lib_Component__["a" /* d
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_Component__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__atoms_Button__ = __webpack_require__(51);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__router_Router__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__atoms_Button__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__router_Router__ = __webpack_require__(53);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Storage__ = __webpack_require__(12);
 
 
@@ -10737,193 +10745,193 @@ module.exports = __webpack_require__.p + "images/fd4b831c5ee8387b3a3bc88595ac5c0
 /* 361 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/5553193b545eef1775dabb1825ec4371.png";
+module.exports = __webpack_require__.p + "images/a126dd6c9408b6fd1b55a3bae032665c.png";
 
 /***/ }),
 /* 362 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/da4089ea98eaa2c386ceda30f47f096d.png";
+module.exports = __webpack_require__.p + "images/5024fb992a347770433d8c1b6314474c.png";
 
 /***/ }),
 /* 363 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/95287a00479c960dca1905aec2a637eb.png";
+module.exports = __webpack_require__.p + "images/c704c644002c1af8312b3a8ac51476f3.png";
 
 /***/ }),
 /* 364 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/bdc46ce6fb845a0bef42d0e54f886c9f.png";
+module.exports = __webpack_require__.p + "images/266f7e99f496c2f2325545f419744006.png";
 
 /***/ }),
 /* 365 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/8c07504dc5959b6769e564da54acfeff.png";
+module.exports = __webpack_require__.p + "images/573bbddf9d810105f964834efe86fe36.png";
 
 /***/ }),
 /* 366 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/5085658056f3df44594dab29b5d0c6fa.png";
+module.exports = __webpack_require__.p + "images/402ba5ee00796a6a36873d4d1b7465ab.png";
 
 /***/ }),
 /* 367 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/b073d40b16ed69b393d2e58212bca69c.png";
+module.exports = __webpack_require__.p + "images/2469460d3e9c9ea918e236e80a32071b.png";
 
 /***/ }),
 /* 368 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/69ed142b5d328c6bf79d9f59c6a4a7ee.png";
+module.exports = __webpack_require__.p + "images/bb4c0f708288ca471917d033fe92ee0b.png";
 
 /***/ }),
 /* 369 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/479fd2d04d70b037cd9dafa960017aeb.png";
+module.exports = __webpack_require__.p + "images/7a89551b03a87868ba47dcd1b85e5e24.png";
 
 /***/ }),
 /* 370 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/22968fdba1b89d6768ebd91f4862389f.png";
+module.exports = __webpack_require__.p + "images/c756444e1c90c9c14560b163090f7dec.png";
 
 /***/ }),
 /* 371 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/0c84e22ae8faaea130abd119d7f9b004.png";
+module.exports = __webpack_require__.p + "images/00d873b42339453444a0b7eeca4f8dd7.png";
 
 /***/ }),
 /* 372 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/2df347a7075de10c8cbd01c7ed7f0e65.png";
+module.exports = __webpack_require__.p + "images/f0cb9cd2109ce95e9d0d933e33e8ddcc.png";
 
 /***/ }),
 /* 373 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/e1825c14de1df78d4d7e3ddec1a8edaf.png";
+module.exports = __webpack_require__.p + "images/7b289ac02d6ee5578f5acb7c1ebc16a6.png";
 
 /***/ }),
 /* 374 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/52ac48300ee19ef380f67f07873b3ceb.png";
+module.exports = __webpack_require__.p + "images/1e6408283268675ad1c856f7afdc08d8.png";
 
 /***/ }),
 /* 375 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/631ad01436ab097c9ae3350af2472ed1.png";
+module.exports = __webpack_require__.p + "images/13889be9ad0a98287f1ea0219ebad9cf.png";
 
 /***/ }),
 /* 376 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/38ab0c930f67d1b39fae577980125b04.png";
+module.exports = __webpack_require__.p + "images/d590e6e4266ae2a30d04ef627dbbbecd.png";
 
 /***/ }),
 /* 377 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/b100e86ace8c66275f916a46416a3fbf.png";
+module.exports = __webpack_require__.p + "images/3c31b7556785c5701f2816c29ea807af.png";
 
 /***/ }),
 /* 378 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/5a965724c598f679731e5f9e088bb509.png";
+module.exports = __webpack_require__.p + "images/9ab6b9c0ee74f5fafe687c2635a5290b.png";
 
 /***/ }),
 /* 379 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/67d756c70e20cfe07666b57fbcdfb3da.png";
+module.exports = __webpack_require__.p + "images/0cc0565945d71fb20504dfef53831545.png";
 
 /***/ }),
 /* 380 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/adc1aaf366dfed742290dc5d791575be.png";
+module.exports = __webpack_require__.p + "images/547d06c204010e3e9fe953db9865ba54.png";
 
 /***/ }),
 /* 381 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/c2aad444c94b23820ce81ce94435b89d.png";
+module.exports = __webpack_require__.p + "images/931ea04a9bb6e4639a1887a74f71e952.png";
 
 /***/ }),
 /* 382 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/eabbee27f1738286df0b6b50b9c99b63.png";
+module.exports = __webpack_require__.p + "images/f9b50647698a6553d5efa30faf28ccf8.png";
 
 /***/ }),
 /* 383 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/99a90c20332e70e12c0cb45272548b51.png";
+module.exports = __webpack_require__.p + "images/bb34c0cd4aa16417b7e0931bab97a0c7.png";
 
 /***/ }),
 /* 384 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/186ad66c970a283fcaeb5072ec183e4a.png";
+module.exports = __webpack_require__.p + "images/66a1924725a9b61454e20c1bdcc9de44.png";
 
 /***/ }),
 /* 385 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/77febdf668ef4a72c102ef475e377685.png";
+module.exports = __webpack_require__.p + "images/61fd88dd812fa0b61aa497f8e4e58a92.png";
 
 /***/ }),
 /* 386 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/b0960d038efbeaa856e6eb35cba116be.png";
+module.exports = __webpack_require__.p + "images/9649aa251efe23a16b13b7f4b22b8722.png";
 
 /***/ }),
 /* 387 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/f157ab2562851b3c78b362dc7b00bf1f.png";
+module.exports = __webpack_require__.p + "images/e60a27592264e9749500ff6bcdd5a7c8.png";
 
 /***/ }),
 /* 388 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/b3aa1d508927dd8c14853d963c6a5b12.png";
+module.exports = __webpack_require__.p + "images/f6e190de186f16a4f514e8f9ecdbb8f2.png";
 
 /***/ }),
 /* 389 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/dca8206de28ab2e0b66888d6d46770ea.png";
+module.exports = __webpack_require__.p + "images/3e4d93081ccb899cfbb5f52a063c692d.png";
 
 /***/ }),
 /* 390 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/e0ec610aaf123bc64122195642fc20aa.png";
+module.exports = __webpack_require__.p + "images/7e91aa7161b2bd38f3acdd8965829ced.png";
 
 /***/ }),
 /* 391 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/daeb3b1e4c32bc309c647606e8162541.png";
+module.exports = __webpack_require__.p + "images/456635bf7809847e7873a4c48c1a5085.png";
 
 /***/ }),
 /* 392 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/fdbdff33e76ddab2f8b42e4e5628b944.png";
+module.exports = __webpack_require__.p + "images/32a3689279e591e6da832b29b00af191.png";
 
 /***/ }),
 /* 393 */
@@ -11068,8 +11076,8 @@ class InGameHeader extends __WEBPACK_IMPORTED_MODULE_0__lib_Component__["a" /* d
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_Component__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Storage__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__assets_Characters__ = __webpack_require__(53);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__atoms_Img_js__ = __webpack_require__(68);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__assets_Characters__ = __webpack_require__(48);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__atoms_Img__ = __webpack_require__(68);
 
 
 
@@ -11080,10 +11088,10 @@ class InGameHeader extends __WEBPACK_IMPORTED_MODULE_0__lib_Component__["a" /* d
 class RoundBackButton extends __WEBPACK_IMPORTED_MODULE_0__lib_Component__["a" /* default */] {
     constructor() {
         super();
-        this.button = new __WEBPACK_IMPORTED_MODULE_3__atoms_Img_js__["a" /* default */]({
+        this.button = new __WEBPACK_IMPORTED_MODULE_3__atoms_Img__["a" /* default */]({
             alt: 'back',
             style: 'game-round-back__button',
-            src: __WEBPACK_IMPORTED_MODULE_2__assets_Characters__["a" /* back */],
+            src: __WEBPACK_IMPORTED_MODULE_2__assets_Characters__["a" /* etc */][1].src,
         });
 
         this.store = new __WEBPACK_IMPORTED_MODULE_1__Storage__["a" /* default */]();
@@ -11091,7 +11099,7 @@ class RoundBackButton extends __WEBPACK_IMPORTED_MODULE_0__lib_Component__["a" /
 
     mount(event) {
         // 백 버튼 이미지 누를 시
-        const t = document.querySelector(".game-round-back__button");
+        const t = document.querySelector('.game-round-back__button');
 
         // 백 버튼 클릭 이벤트 리스너
         t.addEventListener('click', () => {
@@ -11342,7 +11350,7 @@ module.exports = __webpack_require__.p + "images/b54c7e38c1c3e999efde513c5e9a81f
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_Component__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__atoms_Img__ = __webpack_require__(68);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__assets_Characters__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__assets_Characters__ = __webpack_require__(48);
 
 
 
@@ -11353,7 +11361,7 @@ class VersusImage extends __WEBPACK_IMPORTED_MODULE_0__lib_Component__["a" /* de
     constructor() {
         super();
         this.image = new __WEBPACK_IMPORTED_MODULE_1__atoms_Img__["a" /* default */]({
-            src: __WEBPACK_IMPORTED_MODULE_2__assets_Characters__["e" /* vs */],
+            src: __WEBPACK_IMPORTED_MODULE_2__assets_Characters__["a" /* etc */][3].src,
             alt: 'vs',
             style: 'game-versus__image',
         });
@@ -11381,8 +11389,8 @@ class VersusImage extends __WEBPACK_IMPORTED_MODULE_0__lib_Component__["a" /* de
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_Container__ = __webpack_require__(403);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Storage__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_assets_Characters__ = __webpack_require__(53);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__router_Router__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_assets_Characters__ = __webpack_require__(48);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__router_Router__ = __webpack_require__(53);
 
 
 
@@ -11617,7 +11625,7 @@ class GameContainer extends __WEBPACK_IMPORTED_MODULE_0__lib_Container__["a" /* 
         this.store.values.currentRound = 1;
         this.store.values.displayStage = this.store.values.stage;
 
-        this.tree.init(this.store.values.sex === 'man' ? __WEBPACK_IMPORTED_MODULE_2__components_assets_Characters__["d" /* manGroup */] : __WEBPACK_IMPORTED_MODULE_2__components_assets_Characters__["f" /* womanGroup */]);
+        this.tree.init(this.store.values.sex === 'man' ? __WEBPACK_IMPORTED_MODULE_2__components_assets_Characters__["b" /* manGroup */] : __WEBPACK_IMPORTED_MODULE_2__components_assets_Characters__["c" /* womanGroup */]);
     }
 
     /* 현재 카드 두장에 대한 이미지 정보 */
@@ -11935,9 +11943,9 @@ class ResultButtonContents extends __WEBPACK_IMPORTED_MODULE_0__lib_Component__[
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_Component__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__atoms_Button__ = __webpack_require__(51);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__atoms_Button__ = __webpack_require__(52);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Storage__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__router_Router__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__router_Router__ = __webpack_require__(53);
 
 
 
@@ -12035,6 +12043,46 @@ const Event = {
 };
 
 /* harmony default export */ __webpack_exports__["a"] = (Event);
+
+
+/***/ }),
+/* 413 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_assets_Characters__ = __webpack_require__(48);
+
+
+
+
+const imageList = [];
+
+__WEBPACK_IMPORTED_MODULE_0__components_assets_Characters__["b" /* manGroup */].forEach((data) => {
+    imageList.push(data.src);
+});
+
+__WEBPACK_IMPORTED_MODULE_0__components_assets_Characters__["c" /* womanGroup */].forEach((data) => {
+    imageList.push(data.src);
+});
+
+__WEBPACK_IMPORTED_MODULE_0__components_assets_Characters__["a" /* etc */].forEach((data) => {
+    imageList.push(data.src);
+});
+
+const images = [];
+
+const preload = (...srcs) => {
+    for (let i = 0; i < srcs.length; i += 1) {
+        images[i] = new Image();
+        images[i].src = srcs[i];
+    }
+};
+
+const Preload = () => {
+    preload(...imageList);
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (Preload);
 
 
 /***/ })
